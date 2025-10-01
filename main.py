@@ -62,12 +62,6 @@ def csv_file_reader(file_path):
             })
     return rows
 
-
-
-from itertools import combinations
-
-BUDGET_CENTS = 50000  # 500 €
-
 def find_best_bruteforce(rows, budget_cents=BUDGET_CENTS):
     n = len(rows)
 
@@ -83,10 +77,9 @@ def find_best_bruteforce(rows, budget_cents=BUDGET_CENTS):
             total_cost = 0
             total_profit = 0
 
-            over_budget = False
             for r in subset:
                 total_cost += r["cost_cents"]
-                if over_budget:
+                if total_cost > BUDGET_CENTS:
                     continue
                 total_profit += r["profit_cents"]
             
