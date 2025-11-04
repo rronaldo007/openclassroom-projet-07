@@ -1,10 +1,8 @@
-
 import csv
 import time
 from pathlib import Path
 
 BUDGET_CENTS = 50000  # Budget maximum : 500€ en centimes
-
 
 def find_csv_file():
     csv_files = list(Path(".").glob("*.csv"))
@@ -29,38 +27,32 @@ def load_actions_from_csv(file_path):
     if not path.exists():
         return actions
     
-    try:
-        with path.open("r", encoding="utf-8-sig", newline="") as file:
-            reader = csv.DictReader(file, delimiter=',')
+    with path.open("r", encoding="utf-8-sig", newline="") as file:
+        reader = csv.DictReader(file, delimiter=',')
+        
+        for _, row in enumerate(reader, start=2):
+            if not [v and str(v).strip() for v in row.values()]:
+                continue
             
-            for _, row in enumerate(reader, start=2):
-                if not [v and str(v).strip() for v in row.values()]:
-                    continue
-                
-                # Extraire les données
-                name = row['Actions #'].strip()
-                cost_str = row['Coût par action (en euros)']
-                benefit_str = row['Bénéfice (après 2 ans)']
-                
-                # Parser les valeurs  float(s.rstrip('%')  int(float(euros_str) * 100)
-                benefit_percent = float(benefit_str.rstrip('%'))
-                cost_cents =  int(float(cost_str) * 100)
-                
-                # Calculer le profit
-                profit_cents = int(cost_cents * benefit_percent / 100)
-                
-                # Ajouter l'action
-                actions.append({
-                    'name': name,
-                    'cost_cents': cost_cents,
-                    'benefit_percent': benefit_percent,
-                    'profit_cents': profit_cents,
-                })
-    
-    except Exception as e:
-        print(f"Erreur lors de la lecture du fichier: {e}")
-        return []
-    
+            # Extraire les données
+            name = row['Actions #'].strip()
+            cost_str = row['Coût par action (en euros)']
+            benefit_str = row['Bénéfice (après 2 ans)']
+            
+            # Parser les valeurs  float(s.rstrip('%')  int(float(euros_str) * 100)
+            benefit_percent = float(benefit_str.rstrip('%'))
+            cost_cents =  int(float(cost_str) * 100)
+            
+            # Calculer le profit
+            profit_cents = int(cost_cents * benefit_percent / 100)
+            
+            # Ajouter l'action
+            actions.append({
+                'name': name,
+                'cost_cents': cost_cents,
+                'benefit_percent': benefit_percent,
+                'profit_cents': profit_cents,
+            })
     return actions
 
 def knapsack_dynamic_programming(actions, budget_cents):
@@ -92,7 +84,6 @@ def knapsack_dynamic_programming(actions, budget_cents):
     # ========================================================================
     dp = [[0] * (budget_cents + 1) for _ in range(n + 1)]
     
-    
     # ========================================================================
     # ÉTAPE 2: REMPLIR LE TABLEAU
     # ========================================================================
@@ -122,7 +113,6 @@ def knapsack_dynamic_programming(actions, budget_cents):
     # On remonte le tableau pour trouver quelles actions ont été prises
     selected_actions = []
     w = budget_cents
-    
     for i in range(n, 0, -1):
         # Si la valeur a changé par rapport à la ligne précédente,
         # c'est que cette action a été prise
@@ -136,7 +126,6 @@ def knapsack_dynamic_programming(actions, budget_cents):
     
     # Calculer le coût total
     total_cost = sum(a['cost_cents'] for a in selected_actions)
-    
     return {
         'selected_actions': selected_actions,
         'total_cost_cents': total_cost,
@@ -147,7 +136,6 @@ def knapsack_dynamic_programming(actions, budget_cents):
 
 def display_results(result, execution_time, num_total_actions):
 
-    
     if result['selected_actions']:
         print("\n" + "-" * 70)
         print(f"{'ACTION':<20} {'COÛT':>12} {'PROFIT':>12} {'BÉNÉFICE':>12}")
@@ -174,12 +162,12 @@ def main():
         return
     
     actions = load_actions_from_csv(file_path)
-    
     start_time = time.time()
     result = knapsack_dynamic_programming(actions, BUDGET_CENTS)
     execution_time = time.time() - start_time
     
     display_results(result, execution_time, len(actions))
+
 
 
 if __name__ == "__main__":
