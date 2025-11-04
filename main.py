@@ -4,8 +4,8 @@ from pathlib import Path
 
 from itertools import combinations
 
-BUDGET_CENTS = 50000  # 500 €
-FILE_PATH = "./Liste+d'actions+-+P7+Python+-+Feuille+1.csv"  # <-- update me
+BUDGET_CENTS = 50000  # 500 en centime €
+FILE_PATH = "./Liste+d'actions+-+P7+Python+-+Feuille+1.csv"
 
 
 def _parse_percent(s):
@@ -65,11 +65,10 @@ def csv_file_reader(file_path):
 def find_best_bruteforce(rows, budget_cents=BUDGET_CENTS):
     n = len(rows)
 
-    # Empty-set baseline
     best_rows = []
     best_profit = 0
     best_cost = 0
-    combos_checked = 1  # empty set counted
+    combos_checked = 1 
 
     for k in range(1, n + 1):
         for subset in combinations(rows, k):
@@ -79,9 +78,9 @@ def find_best_bruteforce(rows, budget_cents=BUDGET_CENTS):
 
             for r in subset:
                 total_cost += r["cost_cents"]
-                if total_cost > BUDGET_CENTS:
-                    continue
                 total_profit += r["profit_cents"]
+            if total_cost > BUDGET_CENTS:
+                continue
             
             if total_profit >= best_profit:
                 best_rows = list(subset)
