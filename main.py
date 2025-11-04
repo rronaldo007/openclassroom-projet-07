@@ -4,6 +4,8 @@ from pathlib import Path
 
 BUDGET_CENTS = 50000  # Budget maximum : 500€ en centimes
 
+FILE_PATH = "./dataset1_Python+P7.csv"
+
 def find_csv_file():
     csv_files = list(Path(".").glob("*.csv"))
     
@@ -156,12 +158,8 @@ def display_results(result, execution_time, num_total_actions):
 
 
 def main():
-    file_path = find_csv_file()
     
-    if not file_path:
-        return
-    
-    actions = load_actions_from_csv(file_path)
+    actions = load_actions_from_csv(FILE_PATH)
     start_time = time.time()
     result = knapsack_dynamic_programming(actions, BUDGET_CENTS)
     execution_time = time.time() - start_time
