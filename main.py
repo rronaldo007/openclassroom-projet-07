@@ -1,6 +1,7 @@
 import csv
 import time
 from pathlib import Path
+import sys
 
 BUDGET_CENTS = 50000  # Budget maximum : 500€ en centimes
 
@@ -159,7 +160,9 @@ def display_results(result, execution_time, num_total_actions):
 
 def main():
     
-    actions = load_actions_from_csv(FILE_PATH)
+    file_path = sys.argv[1]
+    
+    actions = load_actions_from_csv(file_path)
     start_time = time.time()
     result = knapsack_dynamic_programming(actions, BUDGET_CENTS)
     execution_time = time.time() - start_time
