@@ -1,5 +1,5 @@
 import csv
-import pprint
+import sys
 from pathlib import Path
 
 from itertools import combinations
@@ -95,7 +95,8 @@ def find_best_bruteforce(rows, budget_cents=BUDGET_CENTS):
     }
 
 def main():
-    rows = csv_file_reader(FILE_PATH)
+    file_path = sys.argv[1]
+    rows = csv_file_reader(file_path)
 
     for row in rows:
         pretty = {
