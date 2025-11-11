@@ -19,6 +19,15 @@ def _parse_euros_to_cents(s):
 def _profit_cents(cost_cents, benefit_percent):
     return cost_cents * (benefit_percent / 100)
 
+def detect_csv_format(fieldnames):
+    """Detect which CSV format is being used"""
+    if 'name' in fieldnames and 'price' in fieldnames and 'profit' in fieldnames:
+        return 'format_new'
+    elif 'Actions #' in fieldnames:
+        return 'format_original'
+    else:
+        raise ValueError(f"Unknown CSV format. Found columns: {fieldnames}")
+
 def csv_file_reader(file_path):
     
     rows = []
@@ -36,10 +45,16 @@ def csv_file_reader(file_path):
             if not any(v and str(v).strip() for v in row.values()):
                 print("!! Skipping empty row")
                 continue
-
-            action = row['Actions #'].strip()
-            cost_raw = row['Coût par action (en euros)']
-            benefit_raw = row['Bénéfice (après 2 ans)']
+            
+            csv_format = detect_csv_format(csv_reader.fieldnames)
+            if csv_format == 'new_format':
+                action = row['name'].strip()
+                cost_raw = row['price']
+                benefit_raw = row['profit']
+            else:
+                action = row['Actions #'].strip()
+                cost_raw = row['Coût par action (en euros)']
+                benefit_raw = row['Bénéfice (après 2 ans)']
 
 
             benefit_percent = _parse_percent(benefit_raw)
