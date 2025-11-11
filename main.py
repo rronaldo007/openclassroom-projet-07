@@ -7,6 +7,11 @@ BUDGET_CENTS = 50000  # Budget maximum : 500€ en centimes
 
 FILE_PATH = "./dataset1_Python+P7.csv"
 
+def detect_csv_format(fieldnames):
+    if 'name' in fieldnames and 'price' in fieldnames:
+        return 'new_format'
+    elif 'Actions #' in fieldnames:
+        return 'original_format'
 def find_csv_file():
     csv_files = list(Path(".").glob("*.csv"))
     
@@ -30,17 +35,23 @@ def load_actions_from_csv(file_path):
     if not path.exists():
         return actions
     
+    
     with path.open("r", encoding="utf-8-sig", newline="") as file:
         reader = csv.DictReader(file, delimiter=',')
+        csv_format = detect_csv_format(reader.fieldnames)
         
         for _, row in enumerate(reader, start=2):
             if not [v and str(v).strip() for v in row.values()]:
                 continue
             
-            # Extraire les données
-            name = row['Actions #'].strip()
-            cost_str = row['Coût par action (en euros)']
-            benefit_str = row['Bénéfice (après 2 ans)']
+            if csv_format == 'new_format':
+                name = row['name'].strip()
+                cost_str = row['price']
+                benefit_str = row['profit']
+            else:
+                name = row['Actions #'].strip()
+                cost_str = row['Coût par action (en euros)']
+                benefit_str = row['Bénéfice (après 2 ans)']
             
             # Parser les valeurs  float(s.rstrip('%')  int(float(euros_str) * 100)
             benefit_percent = float(benefit_str.rstrip('%'))
@@ -71,7 +82,7 @@ def knapsack_dynamic_programming(actions, budget_cents):
         }
     
     # Filtrer les actions trop chères
-    valid_actions = [a for a in actions if a['cost_cents'] <= budget_cents]
+    valid_actions = [a for a in actions if 0 < a['cost_cents'] <= budget_cents]
     n = len(valid_actions)
     
     if n == 0:
