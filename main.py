@@ -20,7 +20,6 @@ def _profit_cents(cost_cents, benefit_percent):
     return cost_cents * (benefit_percent / 100)
 
 def detect_csv_format(fieldnames):
-    """Detect which CSV format is being used"""
     if 'name' in fieldnames and 'price' in fieldnames and 'profit' in fieldnames:
         return 'format_new'
     elif 'Actions #' in fieldnames:
@@ -47,7 +46,7 @@ def csv_file_reader(file_path):
                 continue
             
             csv_format = detect_csv_format(csv_reader.fieldnames)
-            if csv_format == 'new_format':
+            if csv_format == 'format_new':
                 action = row['name'].strip()
                 cost_raw = row['price']
                 benefit_raw = row['profit']
